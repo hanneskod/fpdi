@@ -25,7 +25,7 @@
 //  https://github.com/hanneskod/fpdi/issues
 //
 namespace fpdi {
-    if (!class_exists('\\TCPDF', false)) {
+    if (!class_exists('\\TCPDF', true)) {
         class fpdi_bridge extends \fpdf\FPDF
         {
         }
