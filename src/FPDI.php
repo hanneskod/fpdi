@@ -174,8 +174,7 @@ namespace fpdi {
                     } else {
                         $this->_writeValue($nObj[1]);
                     }
-                    $this->_out('
-endobj');
+                    $this->_out("\nendobj");
                     $this->_objStack[$filename][$n] = null;
                     unset($this->_objStack[$filename][$n]);
                     reset($this->_objStack[$filename]);
@@ -272,9 +271,7 @@ endobj');
                 if (is_subclass_of($this, '\\TCPDF')) {
                     $buffer = $this->_getrawstream($buffer);
                     $this->_out('/Length ' . strlen($buffer) . ' >>');
-                    $this->_out('stream
-' . $buffer . '
-endstream');
+                    $this->_out("stream\n" . $buffer . "\nendstream");
                 } else {
                     $this->_out('/Length ' . strlen($buffer) . ' >>');
                     $this->_putstream($buffer);
@@ -346,7 +343,7 @@ endstream');
                     $this->_writeValue($value[1]);
                     $this->_out('stream');
                     $this->_out($value[2][1]);
-                    $this->_straightOut('endstream');
+                    $this->_straightOut("endstream");
                     break;
                 case \fpdi\pdf_parser::TYPE_HEX:
                     $this->_straightOut('<' . $value[1] . '>');

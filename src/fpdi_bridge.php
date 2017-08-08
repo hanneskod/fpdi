@@ -24,7 +24,7 @@ namespace fpdi {
         class fpdi_bridge extends \TCPDF
         {
             protected $_tpls = array();
-            public $tplPrefix = '/TPL';
+            public $tplPrefix = "/TPL";
             protected $_currentObjId;
             protected function _getxobjectdict()
             {
@@ -87,14 +87,12 @@ namespace fpdi {
                             case 'n':
                                 $out .= chr(10);
                                 break;
-                            case '':
-                                if ($count != $n - 1 && $s[$count + 1] == '
-') {
+                            case "\r":
+                                if ($count != $n - 1 && $s[$count + 1] == "\n") {
                                     $count++;
                                 }
                                 break;
-                            case '
-':
+                            case "\n":
                                 break;
                             default:
                                 if (ord($s[$count]) >= ord('0') && ord($s[$count]) <= ord('9')) {

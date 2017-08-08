@@ -30,7 +30,7 @@ namespace fpdi {
                 if ($ch == $ord['~']) {
                     break;
                 }
-                if (preg_match('/^\\s$/', chr($ch))) {
+                if (preg_match('/^\s$/', chr($ch))) {
                     continue;
                 }
                 if ($ch == $ord['z'] && $state == 0) {
@@ -78,7 +78,7 @@ namespace fpdi {
         }
         public function encode($in)
         {
-            throw new \LogicException('ASCII85 encoding not implemented.');
+            throw new \LogicException("ASCII85 encoding not implemented.");
         }
     }
 }

@@ -23,7 +23,7 @@ namespace fpdi {
         protected $_tpls = array();
         public $tpl = 0;
         protected $_inTpl = false;
-        public $tplPrefix = '/TPL';
+        public $tplPrefix = "/TPL";
         protected $_res = array();
         public $lastUsedTemplateData = array();
         public function beginTemplate($x = null, $y = null, $w = null, $h = null)
@@ -32,7 +32,7 @@ namespace fpdi {
                 throw new \LogicException('This method is only usable with FPDF. Use TCPDF methods startTemplate() instead.');
             }
             if ($this->page <= 0) {
-                throw new \LogicException('You have to add at least a page first!');
+                throw new \LogicException("You have to add at least a page first!");
             }
             if ($x == null) {
                 $x = 0;
@@ -142,7 +142,7 @@ namespace fpdi {
             if ($h == 0) {
                 $h = $w * $_h / $_w;
             }
-            return array('w' => $w, 'h' => $h);
+            return array("w" => $w, "h" => $h);
         }
         public function SetFont($family, $style = '', $size = null, $fontfile = '', $subset = 'default', $out = true)
         {
@@ -278,8 +278,7 @@ namespace fpdi {
         public function _out($s)
         {
             if ($this->state == 2 && $this->_inTpl) {
-                $this->_tpls[$this->tpl]['buffer'] .= $s . '
-';
+                $this->_tpls[$this->tpl]['buffer'] .= $s . "\n";
             } else {
                 parent::_out($s);
             }

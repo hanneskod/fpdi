@@ -113,7 +113,7 @@ namespace fpdi {
         }
         public function encode($in)
         {
-            throw new \LogicException('LZW encoding not implemented.');
+            throw new \LogicException("LZW encoding not implemented.");
         }
     }
 }
