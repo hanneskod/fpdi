@@ -143,17 +143,13 @@ namespace fpdi {
                 throw new \Exception('Trailer keyword not found after xref table');
             }
             $data = ltrim(substr($data, 0, $trailerPos));
-            $found = preg_match_all('/(
-|
-|)/', substr($data, 0, 100), $m);
+            $found = preg_match_all("/(\r\n|\n|\r)/", substr($data, 0, 100), $m);
             if ($found === 0) {
                 throw new \Exception('Xref table seems to be corrupted.');
             }
             $differentLineEndings = count(array_unique($m[0]));
             if ($differentLineEndings > 1) {
-                $lines = preg_split('/(
-|
-|)/', $data, -1, PREG_SPLIT_NO_EMPTY);
+                $lines = preg_split("/(\r\n|\n|\r)/", $data, -1, PREG_SPLIT_NO_EMPTY);
             } else {
                 $lines = explode($m[0][0], $data);
             }
@@ -397,8 +393,7 @@ namespace fpdi {
                 if (!$c->ensureContent()) {
                     return false;
                 }
-                $c->offset += strspn($c->buffer, ' 
-	 ', $c->offset);
+                $c->offset += strspn($c->buffer, " \n\f\r\t\0", $c->offset);
             } while ($c->offset >= $c->length - 1);
             $char = $c->buffer[$c->offset++];
             switch ($char) {
@@ -421,9 +416,7 @@ namespace fpdi {
                 case '%':
                     $pos = $c->offset;
                     while (1) {
-                        $match = preg_match('/(
-||
-)/', $c->buffer, $m, PREG_OFFSET_CAPTURE, $pos);
+                        $match = preg_match("/(\r\n|\n|\r)/", $c->buffer, $m, PREG_OFFSET_CAPTURE, $pos);
                         if ($match === 0) {
                             if (!$c->increaseLength()) {
                                 return false;
@@ -439,8 +432,7 @@ namespace fpdi {
                         return false;
                     }
                     while (1) {
-                        $pos = strcspn($c->buffer, ' %[]<>()/
-	 ', $c->offset);
+                        $pos = strcspn($c->buffer, " %[]<>()/\n\f\r\t\0", $c->offset);
                         if ($c->offset + $pos <= $c->length - 1) {
                             break;
                         } else {
