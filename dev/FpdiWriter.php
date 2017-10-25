@@ -12,7 +12,7 @@ class FpdiWriter extends Writer
 {
     public function __construct(NodeTraverser $traverser = null)
     {
-        parent::__construct($traverser);
+        parent::__construct($traverser, new KeepScalarStringsPrinter);
         $this->apply(new NodeStripper('Expr_Include'));
         $this->apply(new CommentStripper);
         $this->apply(new NamespaceWrapper('fpdi'));

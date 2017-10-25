@@ -77,7 +77,7 @@ namespace fpdi {
         {
             if ($this->_pdfVersion === null) {
                 fseek($this->_f, 0);
-                preg_match('/\\d\\.\\d/', fread($this->_f, 16), $m);
+                preg_match('/\d\.\d/', fread($this->_f, 16), $m);
                 if (isset($m[0])) {
                     $this->_pdfVersion = $m[0];
                 }
@@ -108,7 +108,7 @@ namespace fpdi {
             }
             $pos = strlen($data) - $keywordPos;
             $data = substr($data, $pos);
-            if (!preg_match('/\\s*(\\d+).*$/s', $data, $matches)) {
+            if (!preg_match('/\s*(\d+).*$/s', $data, $matches)) {
                 throw new \Exception('Unable to find pointer to xref table.');
             }
             return (int) $matches[1];
@@ -143,17 +143,13 @@ namespace fpdi {
                 throw new \Exception('Trailer keyword not found after xref table');
             }
             $data = ltrim(substr($data, 0, $trailerPos));
-            $found = preg_match_all('/(
-|
-|)/', substr($data, 0, 100), $m);
+            $found = preg_match_all("/(\r\n|\n|\r)/", substr($data, 0, 100), $m);
             if ($found === 0) {
                 throw new \Exception('Xref table seems to be corrupted.');
             }
             $differentLineEndings = count(array_unique($m[0]));
             if ($differentLineEndings > 1) {
-                $lines = preg_split('/(
-|
-|)/', $data, -1, PREG_SPLIT_NO_EMPTY);
+                $lines = preg_split("/(\r\n|\n|\r)/", $data, -1, PREG_SPLIT_NO_EMPTY);
             } else {
                 $lines = explode($m[0][0], $data);
             }
@@ -361,7 +357,7 @@ namespace fpdi {
                             $c->offset = strpos($c->buffer, $toSearchFor) + strlen($toSearchFor);
                             $c->stack = array();
                         } else {
-                            throw new \Exception(sprintf('Unable to find object (%s, %s) at expected location.', $objSpec[1], $objSpec[2]));
+                            throw new \Exception(sprintf("Unable to find object (%s, %s) at expected location.", $objSpec[1], $objSpec[2]));
                         }
                     }
                     $result = array(self::TYPE_OBJECT, 'obj' => $objSpec[1], 'gen' => $objSpec[2]);
@@ -381,7 +377,7 @@ namespace fpdi {
                         $result[0] = self::TYPE_STREAM;
                     }
                 } else {
-                    throw new \Exception(sprintf('Unable to find object (%s, %s) at expected location.', $objSpec[1], $objSpec[2]));
+                    throw new \Exception(sprintf("Unable to find object (%s, %s) at expected location.", $objSpec[1], $objSpec[2]));
                 }
                 return $result;
             } else {
@@ -397,8 +393,7 @@ namespace fpdi {
                 if (!$c->ensureContent()) {
                     return false;
                 }
-                $c->offset += strspn($c->buffer, ' 
-	 ', $c->offset);
+                $c->offset += strspn($c->buffer, "\x20\x0A\x0C\x0D\x09\x00", $c->offset);
             } while ($c->offset >= $c->length - 1);
             $char = $c->buffer[$c->offset++];
             switch ($char) {
@@ -421,9 +416,7 @@ namespace fpdi {
                 case '%':
                     $pos = $c->offset;
                     while (1) {
-                        $match = preg_match('/(
-||
-)/', $c->buffer, $m, PREG_OFFSET_CAPTURE, $pos);
+                        $match = preg_match("/(\r\n|\r|\n)/", $c->buffer, $m, PREG_OFFSET_CAPTURE, $pos);
                         if ($match === 0) {
                             if (!$c->increaseLength()) {
                                 return false;
@@ -439,8 +432,7 @@ namespace fpdi {
                         return false;
                     }
                     while (1) {
-                        $pos = strcspn($c->buffer, ' %[]<>()/
-	 ', $c->offset);
+                        $pos = strcspn($c->buffer, "\x20%[]<>()/\x0A\x0C\x0D\x09\x00", $c->offset);
                         if ($c->offset + $pos <= $c->length - 1) {
                             break;
                         } else {

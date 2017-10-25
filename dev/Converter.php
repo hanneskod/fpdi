@@ -1,8 +1,9 @@
 <?php
 namespace fpdidev;
 
+use hanneskod\classtools\Transformer\Reader;
+use PhpParser\Parser;
 use Symfony\Component\Finder\Finder;
-use hanneskod\classtools\Iterator\SplFileInfo;
 
 class Converter
 {
@@ -19,6 +20,7 @@ class Converter
     {
         foreach ($this->finder as $fileInfo) {
             $fileInfo = new SplFileInfo($fileInfo);
+            $fileInfo->setReader(new Reader($fileInfo->getContents(), new Parser(new KeepOriginalValueLexer)));
             $output(
                 self::buildFilename($fileInfo),
                 $this->header . $this->writer->write($fileInfo->getReader()->readAll())
